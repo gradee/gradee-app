@@ -31,15 +31,10 @@ class App extends Component {
   schoolChange(e) {
     const slug = e.target.value
     if (slug !== '0') {
-      const schoolIndex = this.state.schools.findIndex(school => school.slug === slug)
       API.getSchoolData(slug).then(data => {
-        const schoolsCopy = JSON.parse(JSON.stringify(this.state.schools))
-        schoolsCopy[schoolIndex] = data
-
         this.setState({
           schoolSlug: slug,
-          schools: schoolsCopy,
-          types: schoolsCopy[schoolIndex].types
+          types: data.types
         })
       })
     }
