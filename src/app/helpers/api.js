@@ -13,7 +13,7 @@ function API() {
       if (!navigator.onLine) return reject('No internet connection')
       
       // Fetch School list from API.
-      fetch(apiBaseUrl + '/schools')
+      fetch(`${apiBaseUrl}/schools`)
         .then(res => res.json())
         .then(schoolList => {
           Storage.cache.set('schoolList', schoolList)
@@ -37,7 +37,7 @@ function API() {
       if (!navigator.onLine) return reject('No internet connection')
       
       // Fetch School data from API.
-      fetch(apiBaseUrl + '/schools/' + schoolSlug)
+      fetch(`${apiBaseUrl}/schools/${schoolSlug}`)
         .then(res => res.json())
         .then(schoolData => {
           schoolDataStore[schoolSlug] = schoolData
@@ -61,7 +61,7 @@ function API() {
       
       if (!navigator.onLine) return reject('No internet connection')
       
-      fetch(apiBaseUrl + '/schools/' + schoolSlug + '/' + typeSlug)
+      fetch(`${apiBaseUrl}/schools/${schoolSlug}/${typeSlug}`)
         .then(res => res.json())
         .then(typeData => {
           schoolDataStore[schoolSlug].scheduleList[typeSlug] = typeData
@@ -73,10 +73,34 @@ function API() {
     })
   }
 
+  function getScheduleData(schoolSlug, typeSlug, scheduleId) {
+    return new Promise((resolve, reject) => {
+      // Check cache, and return cached data if it exists.
+      let schoolDataStore = Storage.cache.get('schoolData')
+      if (!schoolDataStore[schoolSlug].hasOwnProperty('scheduleData')) {
+        schoolDataStore[schoolSlug].scheduleData = {}
+      } else if (schoolDataStore[schoolSlug].scheduleData.hasOwnProperty(scheduleId)) {
+        return resolve(schoolDataStore[schoolSlug].scheduleData[scheduleId])
+      }
+
+
+      fetch(`${apiBaseUrl}/schools/${schoolSlug}/${typeSlug}/${scheduleId}`)
+        .then(res => res.json())
+        .then(scheduleData => {
+          schoolDataStore[schoolSlug].scheduleData[scheduleId] = scheduleData
+          Storage.cache.set('schoolData', schoolDataStore)
+
+          resolve(scheduleData)
+        })
+      .catch(error => reject(error))
+    })
+  }
+
   return {
     getSchools,
     getSchoolData,
-    getTypeData
+    getTypeData,
+    getScheduleData
   }
 }
 
