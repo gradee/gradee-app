@@ -1,37 +1,15 @@
 function Storage() {
-  let store = localStorage.getItem('GradeeAppData') ? JSON.parse(localStorage.getItem('GradeeAppData')) : {}
-  if (!store.cache) store.cache = {}
+  const saveKey = 'gradee_app_data'
+  let _ = localStorage.getItem(saveKey) ? JSON.parse(localStorage.getItem(saveKey)) : {}
 
-  function saveData() {
-    localStorage.setItem('GradeeAppData', JSON.stringify(store))
+  function set(changeObj) {
+    Object.keys(changeObj).map(key => {
+      _[key] = changeObj[key]
+    })
+    localStorage.setItem('gradee_app_data', JSON.stringify(_))
   }
 
-  const cache = {
-    get: (key) => {
-      if (!store.cache.hasOwnProperty(key)) return null
-      
-      return JSON.parse(JSON.stringify(store.cache[key]))
-    },
-
-    set: (key, value) => {
-      let didUpdate = false
-      if (!store.cache.hasOwnProperty(key) || JSON.stringify(store.cache[key]) !== JSON.stringify(value)) {
-        didUpdate = true
-        store.cache[key] = value
-        saveData()
-      }
-      return didUpdate
-    },
-
-    clear: () => {
-      store.cache = {}
-      saveData()
-    }
-  }
-
-  return {
-    cache
-  }
+  return { _, set }
 }
 
 export default Storage()
