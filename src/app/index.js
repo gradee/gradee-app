@@ -19,8 +19,16 @@ class App extends Component {
     super(props)
 
     this.state = {
-      introSetup: Storage._.hasOwnProperty('settings')
+      introSetup: Storage._.hasOwnProperty('settings'),
+      settings: Storage._.settings
     }
+
+    Storage.subscribe(this, {
+      settings: {
+        state: 'introSetup',
+        eval: (val) => (typeof val !== 'undefined' && val !== null)
+      }
+    })
   }
 
   render() {

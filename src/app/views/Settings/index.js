@@ -1,4 +1,9 @@
+// Dependencies
 import React, { Component } from 'react'
+import { withRouter } from 'react-router-dom'
+
+// Helpers
+import Storage from './../../helpers/storage'
 
 class Settings extends Component {
 
@@ -11,7 +16,8 @@ class Settings extends Component {
   resetAppSettings() {
     if (!confirm('Are you sure you want to reset the app?')) return
 
-    console.log('Reset app.')
+    Storage.set({ settings: undefined })
+    this.props.history.push('/')
   }
 
   render() {
@@ -23,4 +29,4 @@ class Settings extends Component {
   }
 }
 
-export default Settings
+export default withRouter(Settings)
